@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather app</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/basic.js" defer></script>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://unpkg.com/frappe-charts@latest"></script>
 </head>
 <body>
     <div id="search-div">
         <h1>My weather app</h1>
         <form id="search">
-            <input type="text" id="searchLocation">
+            <input type="text" id="searchLocation", placeholder="Enter a city">
             <input type="submit" id="submitButton">
         </form>
         <button id="user-location">Weather for my location</button>
@@ -22,17 +22,26 @@
         <input type="radio" id="celsius" name="temperature" value="C" checked>
         <label for="celsius">Celsius</label>
         <input type="radio" id="fahrenheit" name="temperature" value="F">
-        <label for="celsius">Fahrenheit</label>
+        <label for="fahrenheit">Fahrenheit</label>
         <input type="radio" id="kelvin" name="temperature" value="K">
         <label for="kelvin">Kelvin</label>
     </div>
 
-    
-
-    <div id="data">
-        <h2 id="location-name">Lahti</h2>
+    <section id="current-weather">
+        <h2 id="location-name"></h2>
         <p id="current-temperature"></p>
-        <div id="7-day-chart"></div>
-    </div>
+    </section>
+
+    <section id="24-forecast">
+        <h3>24 hour forecast</h3>
+        <div id="24-card-container"></div>
+    </section>
+
+    <section id="week-forecast">
+        <h3>Week forecast</h3>
+        <div id="seven-day-cards"></div>
+        <canvas id="chart"></canvas>
+    </section>
+
 </body>
 </html>
