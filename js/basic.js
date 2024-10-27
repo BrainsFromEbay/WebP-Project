@@ -5,6 +5,35 @@ const cityName = document.getElementById("location-name")
 const temperatureDisplay = document.getElementById("current-temperature")
 let chart
 
+function getWeatherIcon(weatherCode) {
+    const weatherIcons = {
+        clear: '<i class="fa-regular fa-sun weather-icon"></i>',
+        partlyCloudy: '<i class="fa-regular fa-cloud weather-icon"></i>',
+        cloudy: '<i class="fa-regular fa-cloud weather-icon"></i>',
+        fog: '<i class="fa-regular fa-smog weather-icon"></i>',
+        rain: '<i class="fa-regular fa-cloud-rain weather-icon"></i>',
+        heavyRain: '<i class="fa-regular fa-cloud-showers-heavy weather-icon"></i>',
+        snow: '<i class="fa-regular fa-snowflake weather-icon"></i>',
+        thunder: '<i class="fa-regular fa-bolt weather-icon"></i>',
+        highTemp: '<i class="fa-regular fa-temperature-high weather-icon"></i>',
+        lowTemp: '<i class="fa-regular fa-temperature-low weather-icon"></i>',
+        wind: '<i class="fa-regular fa-wind weather-icon"></i>',
+        default: '<i class="fa-regular fa-meteor weather-icon"></i>',
+    }
+
+    if (weatherCode === 0) return weatherIcons.clear
+    if ([1, 2].includes(weatherCode)) return weatherIcons.partlyCloudy
+    if (weatherCode === 3) return weatherIcons.cloudy
+    if ([45, 48].includes(weatherCode)) return weatherIcons.fog
+    if ([51, 53, 56, 61, 63, 66].includes(weatherCode)) return weatherIcons.rain
+    if ([55, 57, 65, 67, 80, 81, 82].includes(weatherCode)) return weatherIcons.heavyRain
+    if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) return weatherIcons.snow
+    if ([95, 96, 99].includes(weatherCode)) return weatherIcons.thunder
+
+    return weatherIcons.default
+}
+
+
 submitButton.addEventListener("click", async function(event) {
     event.preventDefault()
     const city = cityInput.value
@@ -40,7 +69,7 @@ autoSearch.addEventListener("click", async function (event) {
 
 async function fetchWeather (lat, lon) {
     const unitChoice = document.querySelector(`input[name="temperature"]:checked`).value
-    let url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&hourly=temperature_2m,rain`
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,is_day,rain,weather_code&hourly=temperature_2m,rain`
 
     if (unitChoice === "F") {
         url += `&temperature_unit=fahrenheit`
@@ -62,14 +91,21 @@ async function fetchWeather (lat, lon) {
 
 function showCurrentWeather(data, unitChoice) {
     let temperature = ""
+    let weatherCode
 
     if (unitChoice === "K") {
         temperature = data.main.temp
+        weatherCode = data.weather[0].id
     } else {
         temperature = data.current.temperature_2m
+        weatherCode = data.current.weather_code
     }
+    
+    temperatureDisplay.innerHTML = temperature + " " + unitChoice
 
-    temperatureDisplay.innerText = temperature + "°" + unitChoice
+    const iconDisplay = document.getElementById("icon-display")
+    const weatherIcon = getWeatherIcon(weatherCode)
+    iconDisplay.appendChild(weatherIcon)
 }
 
 async function getCoordinates(city) {
@@ -117,7 +153,7 @@ function buildChart(data) {
                     label: "Temperature", 
                     data: temps, 
                     backgroundColor: "#eb5146",
-                    borderColor: "#eb5146", 
+                    borderColor: "#443366",
                     borderWidth: 2,
                     pointRadius: 0,
                     yAxisID: "y",
@@ -134,6 +170,7 @@ function buildChart(data) {
             ]
         },
         options: {
+            responsive: true,
             elements: {
                 line: {
                     tension: 0.2
@@ -158,10 +195,17 @@ async function getMaxMin(city) {
     const response = await fetch(url)
     const data = await response.json()
     console.log("yes", data)
-    sevenDayIcons(data)
+    sevenDayCards(data)
 }
 
-function sevenDayIcons (data) {
+function hourlyForecast(data) {
+    const sliceContainer = document.getElementById("container-24")
+    sliceContainer.innerText = ""
+
+
+}
+
+function sevenDayCards (data) {
     const cardContainer = document.getElementById("seven-day-cards")
     cardContainer.innerText = ""
 

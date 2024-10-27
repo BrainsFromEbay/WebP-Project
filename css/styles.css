@@ -1,23 +1,22 @@
-#search-div {
-    background-color: #ff0088;
+:root {
+    --primary-color: #e9dee4af;
+    --text-color: #000000;
+    --shadow-color: rgba(0, 0, 0, 0.1)
+}
+#search-div,
+#units,
+#current-weather,
+#forecast-24,
+#week-forecast {
+    background-color: var(--primary-color);
     padding: 10px;
     margin-left: auto;
     margin-right: auto;
     margin-top: 10vh;
     text-align: center;
     height: 15vh;
-    width: 50%
-}
-
-#units {
-    background-color: #ff0088;
-    padding: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10vh;
-    text-align: center;
-    height: 5vh;
-    width: 50%
+    width: 50%;
+    border-radius: 25px;
 }
 
 #user-location {
@@ -43,44 +42,13 @@
   margin: 5px;
 }
 
-#data {
-    background-color: #b6b6cf;
-    padding: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10vh;
-    text-align: center;
-    height: 15vh;
-    width: 50%;
-}
-
 canvas {
     max-height: 450px;
     margin: 15px;
 }
 
-#current-weather {
-    background-color: #ff0088;
-    padding: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10vh;
-    text-align: center;
-    width: 50%
-}
-
-#24-forecast {
-    background-color: #ff0088;
-    padding: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10vh;
-    text-align: center;
-    width: 50%
-}
-
 #seven-day-cards {
-    background-color: #dbcbd4;
+    background-color: var(--primary-color);
     display: flex;
     overflow-x: auto;
     padding: 10px;
@@ -103,4 +71,11 @@ canvas {
 .day-card img {
     width: 50px;
     height: auto;
+}
+
+@media (max-width: 700px) {
+    #seven-day-cards {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    
 }
