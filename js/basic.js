@@ -1,26 +1,25 @@
 const cityInput = document.getElementById("searchLocation")
 const submitButton = document.getElementById("submitButton")
 const autoSearch = document.getElementById("user-location")
-const cityName = document.getElementById("location-name")
 const temperatureDisplay = document.getElementById("current-temperature")
 let chart
 
-function getWeatherIcon(weatherCode) {
-    const weatherIcons = {
-        clear: '<i class="fa-regular fa-sun weather-icon"></i>',
-        partlyCloudy: '<i class="fa-regular fa-cloud weather-icon"></i>',
-        cloudy: '<i class="fa-regular fa-cloud weather-icon"></i>',
-        fog: '<i class="fa-regular fa-smog weather-icon"></i>',
-        rain: '<i class="fa-regular fa-cloud-rain weather-icon"></i>',
-        heavyRain: '<i class="fa-regular fa-cloud-showers-heavy weather-icon"></i>',
-        snow: '<i class="fa-regular fa-snowflake weather-icon"></i>',
-        thunder: '<i class="fa-regular fa-bolt weather-icon"></i>',
-        highTemp: '<i class="fa-regular fa-temperature-high weather-icon"></i>',
-        lowTemp: '<i class="fa-regular fa-temperature-low weather-icon"></i>',
-        wind: '<i class="fa-regular fa-wind weather-icon"></i>',
-        default: '<i class="fa-regular fa-meteor weather-icon"></i>',
-    }
+const weatherIcons = {
+    clear: "fa-solid fa-sun weather-icon",
+    partlyCloudy: "fa-solid fa-cloud weather-icon",
+    cloudy: "fa-solid fa-cloud weather-icon",
+    fog: "fa-solid fa-smog weather-icon",
+    rain: "fa-solid fa-cloud-rain weather-icon",
+    heavyRain: "fa-solid fa-cloud-showers-heavy weather-icon",
+    snow: "fa-solid fa-snowflake weather-icon",
+    thunder: "fa-solid fa-bolt weather-icon",
+    highTemp: "fa-solid fa-temperature-high weather-icon",
+    lowTemp: "fa-solid fa-temperature-low weather-icon",
+    wind: "fa-solid fa-wind weather-icon",
+    default: "fa-solid fa-meteor weather-icon",
+}
 
+function getWeatherIcon(weatherCode) {
     if (weatherCode === 0) return weatherIcons.clear
     if ([1, 2].includes(weatherCode)) return weatherIcons.partlyCloudy
     if (weatherCode === 3) return weatherIcons.cloudy
@@ -43,15 +42,10 @@ submitButton.addEventListener("click", async function(event) {
         return
     }
 
-    try {
-        const cityCoords = await getCoordinates(city)
-        const {lat, lon} = cityCoords;
-        cityName.innerText = city
-        await getMaxMin(city)
-        await fetchWeather(lat, lon)
-    } catch (error) {
-        temperatureDisplay.innerText = "Couldn't find the city"
-    }
+    const cityCoords = await getCoordinates(city)
+    const {lat, lon} = cityCoords;
+    await getMaxMin(city)
+    await fetchWeather(lat, lon)
     
 })
 
@@ -61,7 +55,6 @@ autoSearch.addEventListener("click", async function (event) {
         const lat = position.coords.latitude
         const lon = position.coords.longitude
         const city = await getCityName(lat, lon)
-        cityName.innerText = city
         await getMaxMin(city)
         await fetchWeather(lat, lon)
     })
@@ -69,43 +62,54 @@ autoSearch.addEventListener("click", async function (event) {
 
 async function fetchWeather (lat, lon) {
     const unitChoice = document.querySelector(`input[name="temperature"]:checked`).value
-    let url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,is_day,rain,weather_code&hourly=temperature_2m,rain`
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,is_day,rain,weather_code&hourly=temperature_2m,rain,weather_code`
 
     if (unitChoice === "F") {
         url += `&temperature_unit=fahrenheit`
-    } else if (unitChoice === "K") {
+    } 
+    if (unitChoice === "K") {
         const apiKey = `fb226e469bddb8553ed2846db6e75e1c` 
-        url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
+        console.log("K")
+        url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`
     }
 
-    try {
-        const response = await fetch(url)
-        const data = await response.json()
-        console.log("Is here city name", data)
-        showCurrentWeather(data, unitChoice) 
-        buildChart(data)
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await fetch(url)
+    const data = await response.json()
+    console.log("Is here city name", data)
+    currentWeatherCard(data, unitChoice)
+    hourlyForecast(data, unitChoice) 
+    buildChart(data, unitChoice)
 }
 
-function showCurrentWeather(data, unitChoice) {
+function currentWeatherCard(data, unitChoice) {
+    const currentWeather = document.getElementById("current-weather-card")
+    currentWeather.innerText = ""
+
     let temperature = ""
-    let weatherCode
+    let weatherCode = ""
 
     if (unitChoice === "K") {
-        temperature = data.main.temp
+        temperature = data.current.temp
         weatherCode = data.weather[0].id
     } else {
         temperature = data.current.temperature_2m
         weatherCode = data.current.weather_code
     }
     
-    temperatureDisplay.innerHTML = temperature + " " + unitChoice
+    
+    const nameText = document.createElement("h2")
+    nameText.innerText = cityInput.value
+    currentWeather.appendChild(nameText)
 
-    const iconDisplay = document.getElementById("icon-display")
+    const temperatureText = document.createElement("h3")
+    temperatureText.innerText = temperature + " " + unitChoice
+    currentWeather.appendChild(temperatureText)
+
     const weatherIcon = getWeatherIcon(weatherCode)
-    iconDisplay.appendChild(weatherIcon)
+    const iconDisplay = document.createElement("i")
+    iconDisplay.className = weatherIcon
+    console.log(iconDisplay)
+    currentWeather.appendChild(iconDisplay)
 }
 
 async function getCoordinates(city) {
@@ -133,10 +137,18 @@ async function getCityName(lat, lon) {
     return data[0].name
 }
 
-function buildChart(data) {
+function buildChart(data, unitChoice) {
     const days = data.hourly.time
     const temps = data.hourly.temperature_2m
     const rain = data.hourly.rain
+
+    if (unitChoice === "K") {
+        temperature = data.main.temp
+        weatherCode = data.weather[0].id
+    } else {
+        temperature = data.current.temperature_2m
+        weatherCode = data.current.weather_code
+    }
 
     if (chart) {
         chart.destroy()
@@ -198,11 +210,41 @@ async function getMaxMin(city) {
     sevenDayCards(data)
 }
 
-function hourlyForecast(data) {
+function hourlyForecast(data, unitChoice) {
     const sliceContainer = document.getElementById("container-24")
     sliceContainer.innerText = ""
 
+    const date = new Date()
+    const currentHour = date.getHours()
+    
+    const next24Hours = data.hourly.time.slice(currentHour, currentHour + 24)
+    const next24Temps = data.hourly.temperature_2m.slice(currentHour, currentHour + 24)
+    const next24Codes = data.hourly.weather_code.slice(currentHour, currentHour + 24)
 
+    next24Hours.forEach((time, index) => {
+        const hourCard = document.createElement("div")
+        hourCard.classList.add("hour-card")
+
+        const hourTime = new Date(time)
+        console.log(hourTime)
+        const displayHour = hourTime.getHours() + ":00"
+
+        const hourLabel = document.createElement("p")
+        hourLabel.classList.add("hour-label")
+        hourLabel.innerText = displayHour
+        hourCard.appendChild(hourLabel)
+
+        const temp = document.createElement("p")
+        temp.classList.add("hour-temp")
+        temp.innerText = next24Temps[index] + " " + unitChoice
+        hourCard.appendChild(temp)
+
+        const iconElement = document.createElement("i")
+        iconElement.className = getWeatherIcon(next24Codes[index])
+        hourCard.appendChild(iconElement)
+
+        sliceContainer.appendChild(hourCard)
+    })
 }
 
 function sevenDayCards (data) {

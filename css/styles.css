@@ -14,7 +14,7 @@
     margin-right: auto;
     margin-top: 10vh;
     text-align: center;
-    height: 15vh;
+    height: auto;
     width: 50%;
     border-radius: 25px;
 }
@@ -40,6 +40,11 @@
   word-break: break-word;
   border: 0;
   margin: 5px;
+}
+
+.weather-icon {
+    font-size: 3rem;
+    color: #a4c5e4;
 }
 
 canvas {
@@ -71,6 +76,22 @@ canvas {
 .day-card img {
     width: 50px;
     height: auto;
+}
+
+#container-24 {
+    display: flex;
+    overflow-x: auto;
+    gap: 5rem;
+    padding: 1rem;
+}
+
+.hour-card {
+    width: 100px;
+    border-radius: 25px;
+    border: solid #ddd;
+    padding: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 @media (max-width: 700px) {
