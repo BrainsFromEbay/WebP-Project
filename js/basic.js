@@ -101,7 +101,7 @@ function currentWeatherCard(data, unitChoice, city) {
 }
 
 async function getCoordinates(city) {
-    const apiKey = `fb226e469bddb8553ed2846db6e75e1c`
+    const apiKey = `TemporarilyDisabled`
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`
 
     const response = await fetch(url)
@@ -116,7 +116,7 @@ async function getCoordinates(city) {
 }
 
 async function getCityName(lat, lon) {
-    const apiKey = `fb226e469bddb8553ed2846db6e75e1c`
+    const apiKey = `TemporarilyDisabled`
     const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`
 
     const response = await fetch(url)
@@ -226,7 +226,7 @@ function buildChart(data, unitChoice) {
 }
 
 async function getMaxMin(city, unitChoice) {
-    const apiKey = `33f2807acb5f410abd5135226242610`
+    const apiKey = `TemporarilyDisabled`
     const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=7`
 
     const response = await fetch(url)
